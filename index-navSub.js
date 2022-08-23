@@ -82,8 +82,6 @@ const navigaCall = async (id) => {
   return response;
 };
 
-navigaCall('auth0|62fab2b0c11aa2e79d548ae1').then(console.log)
-
 exports.handler = async (event, context) => {
   if (event.query === null || event.query === "" || event.query === undefined) {
     return [
