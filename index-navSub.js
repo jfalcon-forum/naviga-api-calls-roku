@@ -1,22 +1,19 @@
+const jwt_decode = require('jwt-decode');
 const { getNavigaSubscriptions } = require('./naviga-subscriptions');
 
 const navigaCall = async (id) => {
   if (id === null || id === "" || id === undefined) {
-    return [
-      {
-        "status": 204,
+    return {
+        "status": 401,
         "message": "Invalid ID"
       }
-    ];
   }
   const navResponse = await getNavigaSubscriptions(id);
   if (navResponse.Errors.length > 1) {
-    return [
-      {
-        "status": 203,
+    return {
+        "status": 401,
         "message": navResponse.Errors[0].Message
       }
-    ];
   }
   let response;
   // check for Owned Subscriptions
@@ -26,22 +23,19 @@ const navigaCall = async (id) => {
       if (navResponse.Result.OwnedSubscriptions[i].Status === "L" && navResponse.Result.OwnedSubscriptions[i].BaseProductPaperCode === "SLS") {
         startDate = Math.floor(new Date(navResponse.Result.OwnedSubscriptions[i].StartDate).getTime() / 1000);
         endDate = Math.floor(new Date(navResponse.Result.OwnedSubscriptions[i].ExpirationDate).getTime() / 1000);
-        response = [
-          {
+        response = {
             "status": 200,
             "product_id": "SLS",
             "starts_at": startDate,
             "ends_at": endDate
           }
-        ];
         break;
       } else {
-        response = [
+        response =
           {
-            "status": 203,
+            "status": 401,
             "message": "No active Livestream Subscriptions for this user"
           }
-        ]; 
       }
     }
   } 
@@ -52,46 +46,51 @@ const navigaCall = async (id) => {
       if (navResponse.Result.GuestSubscriptions[i].Status === "L" && navResponse.Result.GuestSubscriptions[i].BaseProductPaperCode === "SLS") {
         startDate = Math.floor(new Date(navResponse.Result.GuestSubscriptions[i].StartDate).getTime() / 1000);
         endDate = Math.floor(new Date(navResponse.Result.GuestSubscriptions[i].ExpirationDate).getTime() / 1000);
-        response = [
+        response =
           {
             "status": 200,
             "product_id": "SLS",
             "starts_at": startDate,
             "ends_at": endDate
           }
-        ];
         break;
       } else {
-        response = [
+        response =
           {
-            "status": 203,
+            "status": 401,
             "message": "No active Livestream Subscriptions for this user"
           }
-        ]; 
       }
     }
   }
   if (!response) {
-    response = [
-      {
-        "status": 203,
-        "message": "User does not exist or does not have any subscriptions."
-      }
-    ];
+    response = {
+      "status": 401,
+      "message": "User does not exist or does not have any subscriptions."
+    }
   }
   return response;
 };
 
-exports.handler = async (event, context) => {
+exports.handler = async (event, context, callback) => {
   if (event.query === null || event.query === "" || event.query === undefined) {
-    return [
-      {
-        "status": 204,
+    return {
+        "status": 401,
         "message": "Invalid ID"
       }
-    ];
   }
-  let authId = decodeURIComponent(event.query.consumer_id);
+  let authId;
+  if (event.query.ctx.length > 5) {
+    let buff = Buffer.from(event.query.ctx, 'base64');
+    let text = buff.toString();
+    let decoded = await jwt_decode(text);
+    authId = decoded.sub;
+  } else {
+    return {
+      "status": 401,
+      "message": "Invalid ctx value."
+    }
+  }
   const response = await navigaCall(authId);
   return response;
 };
