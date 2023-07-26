@@ -5,7 +5,7 @@ const navigaCall = async (id) => {
   if (id === null || id === "" || id === undefined) {
     return {
         "status": 401,
-        "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/wdayplus for more information.",
+        "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/getwdayplus for more information.",
         "message": "Invalid ID"
       }
   }
@@ -13,7 +13,7 @@ const navigaCall = async (id) => {
   if (navResponse.Errors.length > 1) {
     return {
         "status": 401,
-        "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/wdayplus for more information.",
+        "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/getwdayplus for more information.",
         "message": navResponse.Errors[0].Message
       }
   }
@@ -36,7 +36,7 @@ const navigaCall = async (id) => {
         response =
           {
             "status": 401,
-            "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/wdayplus for more information.",
+            "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/getwdayplus for more information.",
             "message": "No active Livestream Subscriptions for this user"
           }
       }
@@ -61,7 +61,7 @@ const navigaCall = async (id) => {
         response =
           {
             "status": 401,
-            "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/wdayplus for more information.",
+            "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/getwdayplus for more information.",
             "message": "No active Livestream Subscriptions for this user"
           }
       }
@@ -70,7 +70,7 @@ const navigaCall = async (id) => {
   if (!response) {
     response = {
       "status": 401,
-      "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/wdayplus for more information.",
+      "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/getwdayplus for more information.",
       "message": "User does not exist or does not have any subscriptions."
     }
   }
@@ -93,7 +93,7 @@ exports.handler = async (event, context, callback) => {
   } else {
     return {
       "status": 401,
-      "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/wdayplus for more information.",
+      "statusText": "You need a valid login to access this content. Visit https://www.inforum.com/getwdayplus for more information.",
       "message": "Invalid ctx value."
     }
   }
