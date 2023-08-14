@@ -112,15 +112,21 @@ const navigaCall = async (id) => {
 };
 
 exports.handler = async (event, context, callback) => {
-  if (event.query === null || event.query === "" || event.query === undefined) {
+  if (
+    event.queryParams === null ||
+    event.queryParams === "" ||
+    event.queryParams === undefined
+  ) {
     return {
       status: 401,
       message: "Invalid ID",
     };
   }
+  console.log(event.queryParams.ctx);
+  console.log(event.pathParams);
   let authId;
-  if (event.query.ctx.length > 5) {
-    let buff = Buffer.from(event.query.ctx, "base64");
+  if (event.queryParams.ctx.length > 5) {
+    let buff = Buffer.from(event.queryParams.ctx, "base64");
     let text = buff.toString();
     let decoded = await jwt_decode(text);
     authId = decoded.sub;
@@ -141,7 +147,7 @@ exports.handler = async (event, context, callback) => {
         statusText: "invalid media id or empty",
       };
     }
-    let media = await getJwplayerMediaObj(media_id);
+    let media = await getJwplayerMediaObj(event.pathParams.id);
     const formattedMedia = await constructApplicasterMedia(media);
     return formattedMedia;
   }
