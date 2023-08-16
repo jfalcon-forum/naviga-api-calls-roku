@@ -105,7 +105,7 @@ const constructApplicasterMedia = (media) => {
         type: {
           value: "video",
         },
-        title: media.playlist[0].mediaid,
+        title: media.playlist[0].title,
         summary: "",
         content: {
           type: "video/hls",
